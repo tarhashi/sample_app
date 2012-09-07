@@ -40,7 +40,7 @@ describe "Authentication" do
 
       describe "when visit the signup page" do
         before { visit new_user_path }
-        it { should have_selector('h1', text: 'Welcome to the Sample App') }
+        it { should have_selector('h1', text: user.name) }
       end
 
       describe "when try to create user" do
@@ -104,6 +104,19 @@ describe "Authentication" do
         describe "visiting the user index" do
           before { visit users_path }
           it { should have_selector('title', text: 'Sign in') }
+        end
+      end
+
+      describe "in the Microscripts controller" do
+
+        describe "submitting to the create action" do
+          before { post microposts_path }
+          specify { response.should redirect_to(signin_path) }
+        end
+
+        describe "submitting to the destroy action" do
+          before { delete micropost_path(FactoryGirl.create(:micropost)) }
+          specify { response.should redirect_to(signin_path) }
         end
       end
     end
