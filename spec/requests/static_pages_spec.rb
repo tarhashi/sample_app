@@ -25,6 +25,7 @@ describe "Static pages" do
         sign_in user
         visit root_path
       end
+      after { user.microposts.destroy }
 
       it "should render the user's feed" do
         user.feed.each do |item|
@@ -32,6 +33,56 @@ describe "Static pages" do
         end
       end
     end
+
+    describe "about micropost's count" do
+      let(:user) { FactoryGirl.create(:user) }
+      before do
+        sign_in user
+        visit root_path
+      end
+      after { user.destroy }
+
+      describe "when there are 0 microposts" do
+        it { should have_selector('span', text: '0 microposts') } 
+      end
+      
+      describe "when there is only 1 micropost" do
+        before do 
+          FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") 
+          sign_in user
+          visit root_path
+        end
+        it { should have_selector('span', text: '1 micropost') } 
+      end
+
+      describe "when there are 2 microposts" do
+        before do 
+          FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum") 
+          FactoryGirl.create(:micropost, user: user, content: "Dolor sit amet") 
+          sign_in user
+          visit root_path
+        end
+        it { should have_selector('span', text: '2 microposts') } 
+      end
+    end
+
+    describe "pagination" do
+      let(:user) { FactoryGirl.create(:user, email: 'test@example.com') }
+      before do 
+        31.times {|n| FactoryGirl.create(:micropost, user: user, content: "Test") } 
+        sign_in user
+        visit root_path
+      end
+      after { user.destroy }
+      it { should have_selector('div.pagination') }
+
+      it "should list each user" do
+        user.microposts.paginate(page: 1).each do |micropost|
+          page.should have_selector('li', text: micropost.content)
+        end
+      end
+    end
+
   end
 
   describe "Help page" do

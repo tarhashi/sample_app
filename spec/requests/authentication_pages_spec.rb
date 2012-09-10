@@ -105,6 +105,7 @@ describe "Authentication" do
           before { visit users_path }
           it { should have_selector('title', text: 'Sign in') }
         end
+
       end
 
       describe "in the Microscripts controller" do

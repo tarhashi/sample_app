@@ -56,6 +56,17 @@ describe "UserPages" do
         end
       end
     end
+
+    describe "visiting other user index" do
+      let(:user2) { FactoryGirl.create(:user, email: 'testtest@example.com') }
+      before do
+        FactoryGirl.create(:micropost, user: user, content: "Lorem ipsum")
+        FactoryGirl.create(:micropost, user: user2, content: "Lorem ipsum")
+        sign_in user
+        visit user_path(user2)
+      end
+      it { should_not have_selector('a', text: 'delete') }
+    end
   end
 
 
